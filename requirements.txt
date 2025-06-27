@@ -5,3 +5,5 @@ aiohttp
 pydantic
 tqdm
 python-dateutil
+requests
+streamlit

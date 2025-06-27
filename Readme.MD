@@ -47,7 +47,8 @@ Monitor the journey from loan application submission to approval/rejection. The 
 - **OpenAI Agent SDK**: For building deterministic function-calling agents
 - **Function Tools**: Logic-bound utilities called by agents
 - **Multichannel Plugin (MCP)**: Sends final output via external systems (Zapier, Slack, etc.)
-- **Python 3.10+**, `aiohttp`, `pandas`, `dotenv`
+- **Streamlit**: For interactive UI to upload, process, and view summaries
+- **Python 3.10+**, `aiohttp`, `pandas`, `dotenv`, `streamlit`
 
 ---
 
@@ -62,7 +63,8 @@ Monitor the journey from loan application submission to approval/rejection. The 
    - `explain_decision()` → justification summary
    - `synthesize_summary()` → final report format
 4. **Orchestration is managed by `orchestrate_application()`** in `orchestrator_pipeline.py`
-5. **ReportAgent** optionally sends the result via MCP
+5. **UI** is implemented in Streamlit (`streamlit_app.py`) and prints summaries
+6. **ReportAgent** optionally sends the result via MCP
 
 ---
 
@@ -161,6 +163,9 @@ Used for testing/debugging individual loan journeys.
 Batch evaluation from CSV using `orchestrate_application()`.
 Prints summaries directly to console (no MCP).
 
+### `ui/streamlit_app.py`
+Streamlit app with upload form, processes CSV, renders all results sequentially.
+
 ### `.env.example`
 Your keys: `OPENAI_API_KEY`, `MCP_SERVER_URL_SSE`
 
@@ -171,6 +176,7 @@ pandas
 python-dotenv
 aiohttp
 pydantic
+streamlit
 ```
 
 ---
@@ -185,14 +191,19 @@ pip install -r requirements.txt
 python eval_runner.py
 ```
 
+To launch the Streamlit UI:
+```bash
+streamlit run ui/streamlit_app.py
+```
+
 ---
 
 ## ✅ Status
 - [x] Steps 1–6 of BRIDGE AI Framework implemented and tested with synthetic data
+- [x] Step 7: Streamlit UI for batch processing and display
 - [ ] Re-enable and test Zapier MCP webhook in report_agent.py
-- [ ] Step 7: UI (Flask or Lovable frontend in progress)
 
-## 🛠️ TODO: Post-MVP Enhancements
+## 🚧 TODO: Post-MVP Enhancements
 
 - [ ] 🔗 **Re-enable MCP / Zapier Integration**
   - File: `agents/report_agent.py`
@@ -201,3 +212,13 @@ python eval_runner.py
   - Make sure `.env` contains a working `MCP_SERVER_URL_SSE` pointing to your webhook
 
 - [ ] 💬 Add WhatsApp or Email delivery via Zapier
+
+- [ ] ⚠️ Add Affordability and Risk-Based Decisioning
+  - Implement tools for affordability score, credit risk evaluation
+  - Enhance `explain_decision()` to incorporate those features
+  - Enable richer business rules for automated approvals or escalation
+
+- [ ] 🎨 UI Enhancements
+  - Downloadable report exports (CSV, Markdown)
+  - Collapsible sections or visual indicators (e.g., color-coded cards)
+  - MCP status logging or alert dashboard
