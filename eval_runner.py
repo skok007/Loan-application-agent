@@ -4,6 +4,9 @@ from datetime import datetime
 from data_model import LoanApplicationJourney
 from orchestrator_pipeline import orchestrate_application
 from utils.load_env import setup_environment
+from utils.config_loader import ConfigLoader
+from tools.synthesize_summary import synthesize_summary
+from agents import RunContextWrapper
 
 setup_environment()
 
@@ -19,20 +22,26 @@ def load_applications_from_csv(file_path):
             approved_time=row.get("approved_time"),
             rejected_time=row.get("rejected_time"),
             processing_steps=steps,
-            flagged_for_fraud=row["flagged_for_fraud"]
+            flagged_for_fraud=row["flagged_for_fraud"],
+            monthly_income=row.get("monthly_income"),
+            monthly_costs=row.get("monthly_costs"),
+            requested_amount=row.get("requested_amount"),
+            monthly_debt=row.get("monthly_debt", 0.0)
         )
         records.append(record)
     return records
 
 
 async def evaluate_applications():
-    file_path = "data/loan_applications_large.csv"
+    file_path = "data/loan_applications_large_enriched.csv"
     records = load_applications_from_csv(file_path)
+    config_loader = ConfigLoader()
 
     for app in records:
         print(f"\n📄 Processing: {app.application_id}")
-        report = orchestrate_application(app)
-        print("📢 Final Output:\n", report)
+        report = orchestrate_application(app, config=config_loader)
+        summary = synthesize_summary(RunContextWrapper(report))
+        print(f"📢 Final Output for {app.application_id}:\n{summary}")
 
 if __name__ == "__main__":
     asyncio.run(evaluate_applications())

@@ -3,7 +3,7 @@ from data_model import LoanApplicationJourney
 from datetime import datetime
 
 @function_tool()
-def check_audit_trail(wrapper: RunContextWrapper[LoanApplicationJourney]) -> str:
+def check_audit_trail(wrapper: RunContextWrapper[LoanApplicationJourney], config=None) -> str:
     journey = wrapper.context
     events = {
         "submitted": journey.submitted_time,
@@ -20,8 +20,12 @@ def check_audit_trail(wrapper: RunContextWrapper[LoanApplicationJourney]) -> str
         sorted_events = sorted(parsed, key=lambda x: x[1])
         event_names = [e[0] for e in sorted_events]
 
-        if event_names != sorted(event_names):
-            return f"⚠️ Audit warning: unexpected sequence - {event_names}"
+        expected_order = ["submitted", "reviewed", "approved", "rejected"]
+        actual = event_names
+        expected = [step for step in expected_order if step in actual]
+
+        if actual != expected:
+            return f"⚠️ Audit warning: unexpected sequence - {actual}"
         return "✅ Audit trail valid and sequential"
     except Exception as e:
         return f"Error in audit trail validation: {str(e)}"

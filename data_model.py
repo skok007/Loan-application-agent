@@ -1,4 +1,3 @@
-
 from dataclasses import dataclass
 from typing import Dict, Optional
 
@@ -11,6 +10,10 @@ class LoanApplicationJourney:
     rejected_time: Optional[str]
     processing_steps: Dict[str, int]
     flagged_for_fraud: bool
+    monthly_income: Optional[float] = None
+    monthly_costs: Optional[float] = None
+    requested_amount: Optional[float] = None
+    monthly_debt: Optional[float] = 0.0
 
 @dataclass
 class TrendAnalysisResult:
@@ -20,3 +23,5 @@ class TrendAnalysisResult:
     recommendation: str
     explanation: str
     timestamp: str
+    affordability_result: Optional[str] = None
+    affordability_level: Optional[str] = None

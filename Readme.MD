@@ -1,6 +1,35 @@
 # 🧠 Loan Application Processing System using OpenAI Agent SDK
 
-This project implements a modular, intelligent agent pipeline to automate loan application decision-making. Built with OpenAI's Agent SDK and powered by deterministic tools, it evaluates compliance (SLA), detects fraud, validates audit trails, explains decisions, and dispatches final reports using MCP-integrated channels (e.g., Slack, Zapier).
+This project implements a modular, intelligent agent pipeline to automate loan application decision-making. Built with OpenAI's Agent SDK and powered by deterministic tools, it evaluates compliance (SLA), detects fraud, validates audit trails, explains decisions, and dispatches final reports using MCP-integrated channels (e.g., Slack, Zapier). A Streamlit UI enables CSV-based batch processing and summary review.
+
+The decision logic is fully configurable via a JSON matrix, allowing you to tune how SLA, fraud, and affordability results determine the final recommendation.
+
+---
+
+## 📋 Setup & Run Instructions
+
+### ✅ Quick Start
+
+```bash
+git clone <your-repo-url>
+cd loan_decision_pipeline
+cp .env.example .env  # Add your keys here
+pip install -r requirements.txt
+```
+
+### ▶️ CLI Usage
+```bash
+python eval_runner.py     # Runs full pipeline on all records in CSV
+python main_runner.py     # Tests single application (optionally sends to MCP)
+```
+
+### 🖥 Run the Streamlit UI
+```bash
+streamlit run ui/streamlit_app.py
+```
+Then open your browser to: http://localhost:8501
+
+Upload `loan_applications_large.csv` or similar to process and view summaries.
 
 ---
 
@@ -222,3 +251,9 @@ streamlit run ui/streamlit_app.py
   - Downloadable report exports (CSV, Markdown)
   - Collapsible sections or visual indicators (e.g., color-coded cards)
   - MCP status logging or alert dashboard
+
+- [ ] 🧠 Final Decision Recommendation
+  - Add `final_decision` to `TrendAnalysisResult`
+  - Evaluate tool output (SLA, fraud, affordability) against matrix
+  - Store matrix in config.json and use `get_recommendation_matrix()`
+  - Append decision to summaries (CLI, UI)
