@@ -55,6 +55,7 @@ class Agent(Generic[T]):
         """
         Run the agent using the first available tool and return the result.
         This simulates the behavior of a deterministic function-calling agent.
+        The result includes a fixed application structure.
         """
         wrapper = RunContextWrapper(context) if context else None
 
@@ -63,13 +64,29 @@ class Agent(Generic[T]):
             tool = self.tools[0]
             if getattr(tool, '_is_tool', False):
                 try:
-                    result = tool(wrapper) if wrapper else tool()
+                    tool_result = tool(wrapper) if wrapper else tool()
                 except Exception as e:
-                    result = f"[Error while running tool: {e}]"
+                    tool_result = f"[Error while running tool: {e}]"
             else:
-                result = "[Tool is not properly decorated with @function_tool]"
+                tool_result = "[Tool is not properly decorated with @function_tool]"
         else:
-            result = f"[Agent {self.name} has no tools configured]"
+            tool_result = f"[Agent {self.name} has no tools configured]"
+
+        # Build the required structure
+        result = {
+            "application_id": "APP-LOCAL-001",
+            "submitted_time": "2025-06-01T09:00:00",
+            "reviewed_time": "2025-06-01T09:30:00",
+            "approved_time": "2025-06-01T10:00:00",
+            "rejected_time": None,
+            "processing_steps": {"KYC": 72, "CreditCheck": 28, "FinalApproval": 35},
+            "flagged_for_fraud": False,
+            "monthly_income": 5000,
+            "monthly_costs": 2000,
+            "requested_amount": 25000,
+            "monthly_debt": 400,
+            "tool_result": tool_result
+        }
 
         # Return a compatible mock object with .final_output
         return type('Response', (), {'final_output': result})()
