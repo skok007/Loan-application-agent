@@ -6,6 +6,11 @@ import os
 
 # Add root directory to sys.path for module resolution
 ROOT = Path(__file__).resolve().parent.parent
+
+import json
+with open(os.path.join(ROOT, "config", "config.json")) as f:
+    full_config = json.load(f)
+
 sys.path.insert(0, str(ROOT))
 
 from utils.config_loader import ConfigLoader
@@ -61,11 +66,24 @@ if manual_input:
                 {"max_ratio": moderate_threshold, "label": "⚠️ Moderate affordability", "level": "review"},
                 {"max_ratio": 1.0, "label": "❌ Low affordability score", "level": "reject"}
             ]
-            dynamic_config = ConfigLoader(overrides={"affordability_thresholds": thresholds})
+            dynamic_config = ConfigLoader(overrides={
+                "affordability_thresholds": thresholds,
+                "recommendation_matrix": full_config["recommendation_matrix"]
+            })
             result = orchestrate_application(app_data, config=dynamic_config)
             summary = synthesize_summary(RunContextWrapper(result))
             st.markdown(f"### Application ID: `{app_id}`")
-            st.markdown(summary)
+            st.markdown(summary["summary_text"])
+            st.dataframe(pd.DataFrame([{
+                "Application ID": app_id,
+                "SLA Result": result.sla_result,
+                "Fraud Result": result.fraud_result,
+                "Affordability": f"{result.affordability_result} ({result.affordability_level})",
+                "Recommendation": result.recommendation,
+                "Explanation": result.explanation,
+                "Timestamp": result.timestamp,
+                "Final Decision": result.final_decision
+            }]))
             st.divider()
         except Exception as e:
             st.error(f"❌ Error in manual entry: {e}")
@@ -84,7 +102,10 @@ if uploaded_file:
             {"max_ratio": moderate_threshold, "label": "⚠️ Moderate affordability", "level": "review"},
             {"max_ratio": 1.0, "label": "❌ Low affordability score", "level": "reject"}
         ]
-        dynamic_config = ConfigLoader(overrides={"affordability_thresholds": thresholds})
+        dynamic_config = ConfigLoader(overrides={
+            "affordability_thresholds": thresholds,
+            "recommendation_matrix": full_config["recommendation_matrix"]
+        })
 
         from tools.synthesize_summary import synthesize_summary
         from agents import RunContextWrapper
@@ -113,7 +134,8 @@ if uploaded_file:
                     "Affordability": f"{result.affordability_result} ({result.affordability_level})",
                     "Recommendation": result.recommendation,
                     "Explanation": result.explanation,
-                    "Timestamp": result.timestamp
+                    "Timestamp": result.timestamp,
+                    "Final Decision": result.final_decision
                 })
             except Exception as e:
                 summaries.append({

@@ -18,6 +18,18 @@ def check_affordability(wrapper: RunContextWrapper[LoanApplicationJourney], conf
 
     for rule in thresholds:
         if ratio <= rule["max_ratio"]:
-            return {"label": rule["label"], "level": rule["level"]}
+            return {
+                "label": rule["label"],
+                "level": rule["level"],
+                "ratio": round(ratio, 3),
+                "threshold_matched": rule["max_ratio"],
+                "explanation": f"Ratio {ratio:.2f} matched affordability threshold {rule['max_ratio']}"
+            }
 
-    return {"label": "❌ Affordability result unavailable", "level": "unknown"}
+    return {
+        "label": "❌ Affordability result unavailable",
+        "level": "unknown",
+        "ratio": ratio,
+        "threshold_matched": None,
+        "explanation": "No threshold matched for given ratio."
+    }

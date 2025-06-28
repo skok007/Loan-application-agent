@@ -27,4 +27,8 @@ class ConfigLoader:
         return self.config.get("explanation_templates", {})
 
     def get_recommendation_matrix(self):
+        if "recommendation_matrix" in self.overrides:
+            return self.overrides["recommendation_matrix"]
         return self.config.get("recommendation_matrix", [])
+    def get_fraud_rules(self):
+        return self.overrides.get("fraud_rules") or self.config.get("fraud_rules", {})

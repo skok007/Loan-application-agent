@@ -25,3 +25,4 @@ class TrendAnalysisResult:
     timestamp: str
     affordability_result: Optional[str] = None
     affordability_level: Optional[str] = None
+    final_decision: Optional[str] = None

@@ -125,6 +125,8 @@ Check Check  Trail   Reason
      +------------------------+
 ```
 
+> 🧠 Agent Orchestration can be extended to include GPT-driven routing and external MCP hooks for affordability, fraud, and credit scoring.
+
 ---
 
 ## 📄 Example Output
@@ -230,7 +232,7 @@ streamlit run ui/streamlit_app.py
 ## ✅ Status
 - [x] Steps 1–6 of BRIDGE AI Framework implemented and tested with synthetic data
 - [x] Step 7: Streamlit UI for batch processing and display
-- [ ] Re-enable and test Zapier MCP webhook in report_agent.py
+- [ ] Step 8: Begin MCP-integrated Agent Extension (LLM + External Service Hooks)
 
 ## 🚧 TODO: Post-MVP Enhancements
 
@@ -257,3 +259,15 @@ streamlit run ui/streamlit_app.py
   - Evaluate tool output (SLA, fraud, affordability) against matrix
   - Store matrix in config.json and use `get_recommendation_matrix()`
   - Append decision to summaries (CLI, UI)
+
+- [ ] 🤖 GPT-Augmented Agent
+  - Use OpenAI's Agent SDK to dynamically route tool calls based on input
+  - Integrate `Agent.run()` flow for GPT-based prompting
+
+- [ ] 🔗 Advanced MCP Integrations
+  - Build an MCP server that can call external credit bureau APIs (e.g., UK provider)
+  - Allow toggling between deterministic rules vs. MCP lookup
+  - Route this logic through a `recommendation_agent.py` that can use either:
+    - Local `check_affordability()` tool
+    - External data via MCP
+  - Expose configuration via `.env` or UI toggle

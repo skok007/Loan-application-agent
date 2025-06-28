@@ -51,7 +51,7 @@ class Agent(Generic[T]):
         self.mcp_servers = mcp_servers or []
         self.client = AsyncOpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
-    async def run(self, input: str, context: T = None) -> Any:
+    async def run(self, input: str, context: T = None, config: Any = None) -> Any:
         """
         Run the agent using the first available tool and return the result.
         This simulates the behavior of a deterministic function-calling agent.
@@ -63,7 +63,7 @@ class Agent(Generic[T]):
             tool = self.tools[0]
             if getattr(tool, '_is_tool', False):
                 try:
-                    result = tool(wrapper) if wrapper else tool()
+                    result = tool(wrapper, config=config) if wrapper else tool(config=config)
                 except Exception as e:
                     result = f"[Error while running tool: {e}]"
             else:

@@ -33,6 +33,7 @@ def load_applications_from_csv(file_path):
 
 
 async def evaluate_applications():
+    decision_stats = {"✅": 0, "⚠️": 0, "❌": 0}
     file_path = "data/loan_applications_large_enriched.csv"
     records = load_applications_from_csv(file_path)
     config_loader = ConfigLoader()
@@ -41,7 +42,18 @@ async def evaluate_applications():
         print(f"\n📄 Processing: {app.application_id}")
         report = orchestrate_application(app, config=config_loader)
         summary = synthesize_summary(RunContextWrapper(report))
-        print(f"📢 Final Output for {app.application_id}:\n{summary}")
+        print(f"📢 Final Output for {app.application_id}:\n{summary['summary_text']}")
+        decision = report.final_decision or "Unknown"
+        if "✅" in decision:
+            decision_stats["✅"] += 1
+        elif "❌" in decision:
+            decision_stats["❌"] += 1
+        elif "⚠️" in decision:
+            decision_stats["⚠️"] += 1
+
+    print("\n📊 Final Decision Breakdown:")
+    for symbol, count in decision_stats.items():
+        print(f"{symbol}: {count}")
 
 if __name__ == "__main__":
     asyncio.run(evaluate_applications())

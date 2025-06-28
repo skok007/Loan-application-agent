@@ -6,6 +6,7 @@ from agents import RunContextWrapper
 from data_model import TrendAnalysisResult
 from datetime import datetime
 from utils.config_loader import ConfigLoader
+from tools.synthesize_summary import synthesize_summary
 
 
 async def run_pipeline(app: LoanApplicationJourney):
@@ -26,7 +27,8 @@ async def run_pipeline(app: LoanApplicationJourney):
         print("\n✅ Report sent via MCP:\n", final.final_output)
     else:
         print("\n📋 Final Report (Local Only):\n")
-        print(report)
+        summary = synthesize_summary(RunContextWrapper(report))
+        print(summary["summary_text"])
 
 
 if __name__ == "__main__":

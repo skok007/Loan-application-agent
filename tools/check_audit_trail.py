@@ -3,7 +3,7 @@ from data_model import LoanApplicationJourney
 from datetime import datetime
 
 @function_tool()
-def check_audit_trail(wrapper: RunContextWrapper[LoanApplicationJourney], config=None) -> str:
+def check_audit_trail(wrapper: RunContextWrapper[LoanApplicationJourney], config=None) -> dict:
     journey = wrapper.context
     events = {
         "submitted": journey.submitted_time,
@@ -12,7 +12,6 @@ def check_audit_trail(wrapper: RunContextWrapper[LoanApplicationJourney], config
         "rejected": journey.rejected_time,
     }
 
-    # Only include steps that exist and are strings
     timeline = [(k, v) for k, v in events.items() if isinstance(v, str)]
 
     try:
@@ -25,7 +24,25 @@ def check_audit_trail(wrapper: RunContextWrapper[LoanApplicationJourney], config
         expected = [step for step in expected_order if step in actual]
 
         if actual != expected:
-            return f"⚠️ Audit warning: unexpected sequence - {actual}"
-        return "✅ Audit trail valid and sequential"
+            return {
+                "valid": False,
+                "label": f"⚠️ Audit warning: unexpected sequence - {actual}",
+                "actual_order": actual,
+                "expected_order": expected,
+                "explanation": "Event order does not match expected flow."
+            }
+        return {
+            "valid": True,
+            "label": "✅ Audit trail valid and sequential",
+            "actual_order": actual,
+            "expected_order": expected,
+            "explanation": "All events followed the expected order."
+        }
     except Exception as e:
-        return f"Error in audit trail validation: {str(e)}"
+        return {
+            "valid": False,
+            "label": "❌ Error in audit trail validation",
+            "actual_order": [],
+            "expected_order": [],
+            "explanation": str(e)
+        }
