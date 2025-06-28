@@ -271,3 +271,85 @@ streamlit run ui/streamlit_app.py
     - Local `check_affordability()` tool
     - External data via MCP
   - Expose configuration via `.env` or UI toggle
+
+---
+
+## 📐 Architecture Refactor Roadmap
+
+To evolve this project into a scalable, production-grade, multi-agent orchestration platform, the following architecture and design enhancements are proposed:
+
+### 🔁 Multi-Agent Extensibility
+
+- Design a centralized `agent_registry.py` to define:
+  - Agent name (e.g., "secured_lending", "mortgage_lending")
+  - Associated orchestration logic (e.g., `orchestrate_secured()`)
+  - Routing type: `"deterministic"`, `"mcp"`, or `"gpt"`-driven
+- Allow new agents to be added by appending a single entry to the registry
+
+### 🌐 MCP Service Expansion
+
+- Create MCP Server variants per agent type:
+  - `SecuredLoanMCP`, `MortgageLoanMCP`, etc.
+- Each agent can optionally use:
+  - Deterministic tool
+  - External data (credit bureau, valuation APIs) via MCP
+- Support toggle per environment via `.env` or config flag
+
+### 🏷️ Lending Type Enrichment
+
+- Refactor input data model (`LoanApplicationJourney`) to include:
+  - `loan_type`: one of `["overdraft", "personal_loan", "credit_card", "car_loan", "mortgage"]`
+- Update `orchestrator_pipeline` to route logic by loan type
+
+### 🔌 Tool-as-API Pattern
+
+- Refactor tools to be exposed as lightweight REST APIs
+- Agents call tools via HTTP (use `aiohttp` client)
+- Benefits:
+  - Improves isolation and debugging
+  - Enables microservice deployment
+  - Allows horizontal scaling
+
+### 📡 Orchestration State Exposure
+
+- Provide orchestration logs/status via API endpoint
+- Track tool calls, inputs, outputs, and decisions
+- Allow front end to poll/report orchestration journey
+
+### ☁️ Scalable Infrastructure Design
+
+- Define container strategy (Docker)
+  - One container per agent
+  - One container per tool
+- Optional: use Kubernetes for orchestration
+- Optional: use Redis/pubsub for async tool messaging
+
+### 🧑‍💼 Multi-User Experience
+
+- Define user roles:
+  - Loan applicant: submits one record
+  - Loan processor: sees queue of loans to evaluate
+- Split UI into:
+  - Application portal (submission)
+  - Underwriter dashboard (streamlit or Flask)
+- Use session state to manage user role and views
+
+---
+
+## 🧱 New Backlog (Architecture Phase)
+
+| ID | Task | Type |
+|----|------|------|
+| A1 | Create `agent_registry.py` with routing config | 🧠 Agent Infra |
+| A2 | Refactor `orchestrator_pipeline.py` to use agent registry | 🔁 Orchestration |
+| A3 | Add `loan_type` field to `LoanApplicationJourney` | 📦 Data Model |
+| A4 | Refactor all tools to be REST services (`aiohttp` or Flask) | 🛠 Tool API |
+| A5 | Create `orchestration_state.py` to track execution events | 🔍 Observability |
+| A6 | Build MCP server variations per agent type | 🌐 MCP Infra |
+| A7 | Add toggle in `.env` for MCP vs Local tool | ⚙️ Config |
+| A8 | Add basic Streamlit user role management | 👥 UI |
+| A9 | Create separate views for applicant vs processor | 🖼 UI |
+| A10 | Dockerize each tool and agent | ☁️ Infra |
+| A11 | Define MVP Kubernetes spec (optional) | ☁️ Infra |
+
+---
