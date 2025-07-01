@@ -6,12 +6,12 @@ except ImportError:
     raise ImportError("yfinance is required. Please install it via pip.")
 
 @function_tool(strict_mode=True)
-def get_uk_interest_rate(wrapper=None, config=None):
+def get_interest_rate(wrapper=None, config=None):
     """
-    Fetch the latest UK interest rate (SONIA) from Yahoo Finance.
+    Fetch the latest interest rate (^TNX) from Yahoo Finance.
     Returns a dict with rate, date, and source.
     """
-    ticker = "^SONIA"
+    ticker = "^TNX"
     data = yf.Ticker(ticker)
     hist = data.history(period="5d")
     if not hist.empty:
@@ -20,17 +20,17 @@ def get_uk_interest_rate(wrapper=None, config=None):
         return {
             'rate': float(latest_rate),
             'date': latest_date,
-            'source': 'Yahoo Finance (^SONIA)'
+            'source': 'Yahoo Finance (^TNX)'
         }
     else:
         return {
-            'error': 'No data found for UK interest rate ticker (^SONIA) on Yahoo Finance.'
+            'error': 'No data found for interest rate ticker (^TNX) on Yahoo Finance.'
         }
 
 interest_rate_agent = Agent(
-    name="UKInterestRateAgent",
-    instructions="Fetch the current UK interest rate using yfinance.",
-    tools=[get_uk_interest_rate],
-    model="gpt-4o-mini",
+    name="InterestRateAgent",
+    instructions="Fetch the current interest rate using yfinance.",
+    tools=[get_interest_rate],
+    model="gpt-3.5-turbo",
     output_type=dict
 )

@@ -10,6 +10,6 @@ recommendation_agent = Agent(
         "- Otherwise, recommend approval consideration.\n"
         "Use a professional tone."
     ),
-    model="gpt-4-0613",
+    model="gpt-4o-mini",
     output_type=str
 )

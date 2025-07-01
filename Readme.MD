@@ -3,7 +3,15 @@
 This project implements a modular, intelligent agent pipeline to automate loan application decision-making. Built with OpenAI's Agent SDK and powered by deterministic tools, it evaluates compliance (SLA), detects fraud, validates audit trails, explains decisions, and dispatches final reports using MCP-integrated channels (e.g., Slack, Zapier). A Streamlit UI enables CSV-based batch processing and summary review.
 
 The decision logic is fully configurable via a JSON matrix, allowing you to tune how SLA, fraud, and affordability results determine the final recommendation.
+---
 
+## ❗ Problem Statement
+
+There is a backlog of loan applications that are currently manually checked, and this is slowing down the loan approval process.
+
+## 💡 Proposed Solution
+
+To create an agent workflow that will process loan applications agentically and autonomously.
 ---
 
 ## 📋 Setup & Run Instructions
