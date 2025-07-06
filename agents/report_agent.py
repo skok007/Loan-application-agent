@@ -4,7 +4,7 @@ from agents import Agent, function_tool, RunContextWrapper
 def synthesize_report(wrapper: RunContextWrapper[dict]) -> str:
     context = wrapper.context
     return f"""📋 Loan Application System Summary
-Dear {context.get('to', 'Daria Zahaleanu')},
+Dear Daria Zahaleanu,  
 Recommendation: {context.get('recommendation', 'No recommendation')}
 Fraud Result: {context.get('fraud_result')}
 SLA Result: {context.get('sla_result')}
