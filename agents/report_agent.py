@@ -1,21 +1,23 @@
-from agents import Agent, ModelSettings
-from tools.synthesize_summary import synthesize_summary
-# from agents.mcp import MCPServerSse
-import os
-from utils.load_env import setup_environment
+from agents import Agent, function_tool, RunContextWrapper
 
-setup_environment()
+@function_tool()
+def synthesize_report(wrapper: RunContextWrapper[dict]) -> str:
+    context = wrapper.context
+    return f"""📋 Loan Application System Summary
+Dear {context.get('to', 'Daria Zahaleanu')},
+Recommendation: {context.get('recommendation', 'No recommendation')}
+Fraud Result: {context.get('fraud_result')}
+SLA Result: {context.get('sla_result')}
+Interest Rate Result: {context.get('interest_rate_result')}
 
-# TODO: Re-enable this once Zapier webhook is ready
-# mcp_url = os.environ.get("MCP_SERVER_URL_SSE")
-# mcp_server = MCPServerSse(name="LoanReportMCP", params={"url": mcp_url})
+Regards,
+Team 5 - Loan Application Agent
+"""
 
 report_agent = Agent(
     name="ReportAgent",
-    instructions="Use the summary tool to produce the final loan report. Do NOT send it externally.",
-    model="gpt-4-0613",
-    tools=[synthesize_summary],
-    # mcp_servers=[mcp_server],  # <-- Temporarily disabled for local testing
-    model_settings=ModelSettings(tool_choice="required"),
+    instructions="Generate a professional summary report for the loan application decision. Address it to Daria Zahaleanu",
+    model="gpt-4o-mini",
+    tools=[synthesize_report],
     output_type=str
 )
